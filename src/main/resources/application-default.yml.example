@@ -1,3 +1,5 @@
+# rename (or copy + paste) as application-default.yml alongside the application .jar file and edit the following:
+
 # host & credentials for Jenkins
 jenkins:
   host: "http://jenkins.example.com"
