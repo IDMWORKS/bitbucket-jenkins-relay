@@ -1,11 +1,11 @@
-package com.idmworks.bitbucket.listener.models;
+package com.idmworks.bitbucket.relay.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.Generated;
 
 @Generated("com.robohorse.robopojogenerator")
-public class Project{
+public class RefState {
 
 	@JsonProperty("name")
 	private String name;
@@ -16,11 +16,8 @@ public class Project{
 	@JsonProperty("type")
 	private String type;
 
-	@JsonProperty("uuid")
-	private String uuid;
-
-	@JsonProperty("key")
-	private String key;
+	@JsonProperty("target")
+	private Target target;
 
 	public void setName(String name){
 		this.name = name;
@@ -46,31 +43,22 @@ public class Project{
 		return type;
 	}
 
-	public void setUuid(String uuid){
-		this.uuid = uuid;
+	public void setTarget(Target target){
+		this.target = target;
 	}
 
-	public String getUuid(){
-		return uuid;
-	}
-
-	public void setKey(String key){
-		this.key = key;
-	}
-
-	public String getKey(){
-		return key;
+	public Target getTarget(){
+		return target;
 	}
 
 	@Override
  	public String toString(){
 		return 
-			"Project{" + 
+			"RefState{" +
 			"name = '" + name + '\'' + 
 			",links = '" + links + '\'' + 
 			",type = '" + type + '\'' + 
-			",uuid = '" + uuid + '\'' + 
-			",key = '" + key + '\'' + 
+			",target = '" + target + '\'' + 
 			"}";
 		}
 }

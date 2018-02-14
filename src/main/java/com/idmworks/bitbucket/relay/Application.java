@@ -1,4 +1,4 @@
-package com.idmworks.bitbucket.listener;
+package com.idmworks.bitbucket.relay;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

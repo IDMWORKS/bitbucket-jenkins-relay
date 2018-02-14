@@ -1,8 +1,8 @@
-package com.idmworks.bitbucket.listener.api;
+package com.idmworks.bitbucket.relay.api;
 
-import com.idmworks.bitbucket.listener.config.ApplicationConfig;
-import com.idmworks.bitbucket.listener.config.JenkinsConfig;
-import com.idmworks.bitbucket.listener.models.*;
+import com.idmworks.bitbucket.relay.config.ApplicationConfig;
+import com.idmworks.bitbucket.relay.config.JenkinsConfig;
+import com.idmworks.bitbucket.relay.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.idmworks.bitbucket.listener.models;
+package com.idmworks.bitbucket.relay.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

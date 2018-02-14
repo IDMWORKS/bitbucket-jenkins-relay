@@ -1,11 +1,11 @@
-package com.idmworks.bitbucket.listener.models;
+package com.idmworks.bitbucket.relay.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.Generated;
 
 @Generated("com.robohorse.robopojogenerator")
-public class Actor{
+public class Owner{
 
 	@JsonProperty("links")
 	private Links links;
@@ -65,7 +65,7 @@ public class Actor{
 	@Override
  	public String toString(){
 		return 
-			"Actor{" + 
+			"Owner{" + 
 			"links = '" + links + '\'' + 
 			",type = '" + type + '\'' + 
 			",display_name = '" + displayName + '\'' + 
