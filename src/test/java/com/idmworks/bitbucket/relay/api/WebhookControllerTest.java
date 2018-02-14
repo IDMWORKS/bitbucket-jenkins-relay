@@ -112,7 +112,7 @@ public class WebhookControllerTest {
         when(mockTemplate.getUriTemplateHandler())
                 .thenReturn(new DefaultUriTemplateHandler());
         when(mockTemplate.getForEntity(isA(URI.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+                .thenReturn(new ResponseEntity<String>(HttpStatus.OK));
 
         final RestTemplateBuilder mockBuilder = mock(RestTemplateBuilder.class);
         when(mockBuilder.basicAuthorization(any(String.class), any(String.class)))
