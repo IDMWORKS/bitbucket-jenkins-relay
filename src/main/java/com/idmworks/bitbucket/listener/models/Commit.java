@@ -1,11 +1,12 @@
 package com.idmworks.bitbucket.listener.models;
 
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.annotation.Generated;
+import java.util.List;
 
 @Generated("com.robohorse.robopojogenerator")
-public class CommitsItem{
+public class Commit {
 
 	@JsonProperty("date")
 	private String date;
@@ -26,7 +27,7 @@ public class CommitsItem{
 	private String hash;
 
 	@JsonProperty("parents")
-	private List<ParentsItem> parents;
+	private List<Parent> parents;
 
 	public void setDate(String date){
 		this.date = date;
@@ -76,18 +77,18 @@ public class CommitsItem{
 		return hash;
 	}
 
-	public void setParents(List<ParentsItem> parents){
+	public void setParents(List<Parent> parents){
 		this.parents = parents;
 	}
 
-	public List<ParentsItem> getParents(){
+	public List<Parent> getParents(){
 		return parents;
 	}
 
 	@Override
  	public String toString(){
 		return 
-			"CommitsItem{" + 
+			"Commit{" +
 			"date = '" + date + '\'' + 
 			",author = '" + author + '\'' + 
 			",links = '" + links + '\'' + 

@@ -1,0 +1,12 @@
+# host & credentials for Jenkins
+jenkins:
+  host: "http://jenkins.example.com"
+  username: "my-username"
+  password: "my-password"
+
+# list (map) of triggers to relay to Jenkins
+triggers:
+  # key is repository "full name" (team/repository)
+  acme/widget:
+      # key is trigger name (currently only tag-created exists) and value is the query string to pass to Jenkins
+      tag-created: "/job/Widget - Tags/buildWithParameters?token=my-token&TRIGGER_GIT_TAG={tagName}"

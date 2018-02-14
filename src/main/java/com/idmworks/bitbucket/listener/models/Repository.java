@@ -1,6 +1,7 @@
 package com.idmworks.bitbucket.listener.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.annotation.Generated;
 
 @Generated("com.robohorse.robopojogenerator")

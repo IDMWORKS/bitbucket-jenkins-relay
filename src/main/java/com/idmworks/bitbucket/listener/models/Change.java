@@ -1,11 +1,12 @@
 package com.idmworks.bitbucket.listener.models;
 
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.annotation.Generated;
+import java.util.List;
 
 @Generated("com.robohorse.robopojogenerator")
-public class ChangesItem{
+public class Change {
 
 	@JsonProperty("new")
 	private RefState newState;
@@ -13,7 +14,7 @@ public class ChangesItem{
 	@JsonProperty("forced")
 	private boolean forced;
 
-	@JsonProperty("oldState")
+	@JsonProperty("old")
 	private RefState oldState;
 
 	@JsonProperty("created")
@@ -23,7 +24,7 @@ public class ChangesItem{
 	private boolean truncated;
 
 	@JsonProperty("commits")
-	private List<CommitsItem> commits;
+	private List<Commit> commits;
 
 	@JsonProperty("closed")
 	private boolean closed;
@@ -71,11 +72,11 @@ public class ChangesItem{
 		return truncated;
 	}
 
-	public void setCommits(List<CommitsItem> commits){
+	public void setCommits(List<Commit> commits){
 		this.commits = commits;
 	}
 
-	public List<CommitsItem> getCommits(){
+	public List<Commit> getCommits(){
 		return commits;
 	}
 
@@ -98,7 +99,7 @@ public class ChangesItem{
 	@Override
  	public String toString(){
 		return 
-			"ChangesItem{" + 
+			"Change{" +
 			"new = '" + newState + '\'' +
 			",forced = '" + forced + '\'' + 
 			",oldState = '" + oldState + '\'' +

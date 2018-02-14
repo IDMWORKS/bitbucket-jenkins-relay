@@ -1,8 +1,9 @@
 package com.idmworks.bitbucket.listener.models;
 
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.annotation.Generated;
+import java.util.List;
 
 @Generated("com.robohorse.robopojogenerator")
 public class Target{
@@ -26,7 +27,7 @@ public class Target{
 	private String hash;
 
 	@JsonProperty("parents")
-	private List<ParentsItem> parents;
+	private List<Parent> parents;
 
 	public void setDate(String date){
 		this.date = date;
@@ -76,11 +77,11 @@ public class Target{
 		return hash;
 	}
 
-	public void setParents(List<ParentsItem> parents){
+	public void setParents(List<Parent> parents){
 		this.parents = parents;
 	}
 
-	public List<ParentsItem> getParents(){
+	public List<Parent> getParents(){
 		return parents;
 	}
 

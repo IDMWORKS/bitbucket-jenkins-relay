@@ -1,10 +1,11 @@
 package com.idmworks.bitbucket.listener.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.annotation.Generated;
 
 @Generated("com.robohorse.robopojogenerator")
-public class ParentsItem{
+public class Parent {
 
 	@JsonProperty("links")
 	private Links links;
@@ -42,7 +43,7 @@ public class ParentsItem{
 	@Override
  	public String toString(){
 		return 
-			"ParentsItem{" + 
+			"Parent{" +
 			"links = '" + links + '\'' + 
 			",type = '" + type + '\'' + 
 			",hash = '" + hash + '\'' + 

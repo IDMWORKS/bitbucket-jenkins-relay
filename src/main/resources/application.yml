@@ -1,0 +1,3 @@
+server:
+  # port to listen on
+  port: 8080
