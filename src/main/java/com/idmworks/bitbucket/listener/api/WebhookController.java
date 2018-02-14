@@ -93,13 +93,13 @@ public class WebhookController {
 
         final String repoFullName = repo.getFullName();
         if (StringUtils.isEmpty(repoFullName)) {
-            logger.warn("Webhook request has no full name for the repository");
+            logger.warn("Webhook request has no full name for the repository '{}'", repo.getName());
             return;
         }
 
         final Map<String, Map<String, String>> appTriggers = this.applicationConfig.getTriggers();
         if (appTriggers == null) {
-            logger.info("There are no triggers configured - see application-default.yml.example");
+            logger.info("There are no triggers configured - see application-default.yml");
             return;
         }
 
@@ -115,17 +115,42 @@ public class WebhookController {
             return;
         }
 
+        if (jenkinsConfig == null) {
+            logger.info("There is no configuration provided for Jenkins - see application-default.yml", TRIGGER_TAG_CREATED, repoFullName);
+            return;
+        }
 
-        // TODO: validate jenkinsConfig, username & pwd
+        final String jenkinsHost = this.jenkinsConfig.getHost();
+        if (StringUtils.isEmpty(jenkinsHost)) {
+            logger.error("There is no Jenkins host configured in application-default.yml");
+            return;
+        }
 
-        final String url = jenkinsConfig.getHost() + String.format(tagCreatedUrl, tagName);
+        final String jenkinsUsername = this.jenkinsConfig.getUsername();
+        if (StringUtils.isEmpty(jenkinsUsername)) {
+            logger.error("There is no Jenkins username configured in application-default.yml");
+            return;
+        }
+
+        final String jenkinsPassword = this.jenkinsConfig.getPassword();
+        if (StringUtils.isEmpty(jenkinsPassword)) {
+            logger.error("There is no Jenkins password configured in application-default.yml");
+            return;
+        }
+
+        final String url = jenkinsHost + String.format(tagCreatedUrl, tagName);
         final RestTemplate restTemplate = new RestTemplateBuilder()
-                .basicAuthorization(jenkinsConfig.getUsername(), jenkinsConfig.getPassword())
+                .basicAuthorization(jenkinsUsername, jenkinsPassword)
                 .build();
 
         final ResponseEntity<String> response = restTemplate.getForEntity(url, String.class, tagName);
 
-        // TODO: validate response
-        logger.info(response.toString());
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.info("Successfully triggered parameterized job in Jenkins");
+        } else {
+            logger.error("Error triggering parameterized job in Jenkins - HTTP {} returned", response.getStatusCodeValue());
+        }
+
+        logger.debug(response.toString());
     }
 }
