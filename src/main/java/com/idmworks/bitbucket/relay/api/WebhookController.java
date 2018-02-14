@@ -6,9 +6,7 @@ import com.idmworks.bitbucket.relay.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -25,20 +23,40 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Configuration
-@ConfigurationProperties(prefix = "triggers")
 public class WebhookController {
 
-    private static final String CHANGE_TYPE_TAG = "tag";
-    private static final String TRIGGER_TAG_CREATED = "tag-created";
+    public static final String CHANGE_TYPE_TAG = "tag";
+    public static final String TRIGGER_TAG_CREATED = "tag-created";
 
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final RestTemplateBuilder restTemplateBuilder;
 
     @Autowired
     private ApplicationConfig applicationConfig;
 
     @Autowired
     private JenkinsConfig jenkinsConfig;
+
+    /**
+     * Default constructor
+     */
+    public WebhookController() {
+        this(null, null, null);
+    }
+
+    /**
+     * DI constructor for Unit Tests
+     */
+    public WebhookController(final RestTemplateBuilder restTemplateBuilder, final ApplicationConfig applicationConfig,
+                             final JenkinsConfig jenkinsConfig) {
+        if (restTemplateBuilder == null) {
+            this.restTemplateBuilder = new RestTemplateBuilder();
+        } else {
+            this.restTemplateBuilder = restTemplateBuilder;
+        }
+        this.applicationConfig = applicationConfig;
+        this.jenkinsConfig = jenkinsConfig;
+    }
 
     @RequestMapping(value = "/webhook", method = RequestMethod.POST)
     public ResponseEntity<?> postWebhook(@RequestBody final Webhook webhook) {
@@ -64,15 +82,21 @@ public class WebhookController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        final String repoFullName = repo.getFullName();
+        if (StringUtils.isEmpty(repoFullName)) {
+            logger.warn("Webhook request has no full name for the repository '{}'", repo.getName());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         logger.info("Processing {} change(s)", pushChanges.size());
         for (final Change pushChange : pushChanges) {
-            handlePushedChange(repo, pushChange);
+            handlePushedChange(repoFullName, pushChange);
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private void handlePushedChange(final Repository repo, final Change pushChange) {
+    private void handlePushedChange(final String repoFullName, final Change pushChange) {
         final RefState newState = pushChange.getNewState();
         if (newState == null) {
             // "new" state is null for deletions
@@ -85,7 +109,7 @@ public class WebhookController {
                     logger.warn("Webhook request contains no name for the new tag");
                 } else {
                     logger.info("Detected newly created tag '{}'", tagName);
-                    handleTagCreated(repo, tagName);
+                    handleTagCreated(repoFullName, tagName);
                 }
             } else {
                 logger.info("Webhook request has unhandled state type '{}' - skipping", stateType);
@@ -93,14 +117,7 @@ public class WebhookController {
         }
     }
 
-    private void handleTagCreated(final Repository repo, final String tagName) {
-
-        final String repoFullName = repo.getFullName();
-        if (StringUtils.isEmpty(repoFullName)) {
-            logger.warn("Webhook request has no full name for the repository '{}'", repo.getName());
-            return;
-        }
-
+    private void handleTagCreated(final String repoFullName, final String tagName) {
         final Map<String, Map<String, String>> appTriggers = this.applicationConfig.getTriggers();
         if (appTriggers == null) {
             logger.info("There are no triggers configured - see application-default.yml");
@@ -116,11 +133,6 @@ public class WebhookController {
         final String tagCreatedUrl = repoTriggers.get(TRIGGER_TAG_CREATED);
         if (tagCreatedUrl == null) {
             logger.info("There are no '{}' triggers configured configured for repo '{}'", TRIGGER_TAG_CREATED, repoFullName);
-            return;
-        }
-
-        if (jenkinsConfig == null) {
-            logger.info("There is no configuration provided for Jenkins - see application-default.yml", TRIGGER_TAG_CREATED, repoFullName);
             return;
         }
 
@@ -143,7 +155,7 @@ public class WebhookController {
         }
 
         final String url = jenkinsHost + String.format(tagCreatedUrl, tagName);
-        final RestTemplate restTemplate = new RestTemplateBuilder()
+        final RestTemplate restTemplate = this.restTemplateBuilder
                 .basicAuthorization(jenkinsUsername, jenkinsPassword)
                 .build();
 
