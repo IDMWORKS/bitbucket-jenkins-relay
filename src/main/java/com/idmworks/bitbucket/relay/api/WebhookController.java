@@ -126,13 +126,13 @@ public class WebhookController {
 
         final Map<String, String> repoTriggers = appTriggers.get(repoFullName);
         if (repoTriggers == null) {
-            logger.info("There are no triggers configured configured for repo '{}'", repoFullName);
+            logger.info("There are no triggers configured for repo '{}'", repoFullName);
             return;
         }
 
         final String tagCreatedUrl = repoTriggers.get(TRIGGER_TAG_CREATED);
         if (tagCreatedUrl == null) {
-            logger.info("There are no '{}' triggers configured configured for repo '{}'", TRIGGER_TAG_CREATED, repoFullName);
+            logger.info("There are no '{}' triggers configured for repo '{}'", TRIGGER_TAG_CREATED, repoFullName);
             return;
         }
 
