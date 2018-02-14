@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.invoke.MethodHandles;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +64,7 @@ public class WebhookController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        logger.info("Processing {} change(s)", pushChanges.size());
         for (final Change pushChange : pushChanges) {
             handlePushedChange(repo, pushChange);
         }
@@ -81,6 +84,7 @@ public class WebhookController {
                 if (StringUtils.isEmpty(tagName)) {
                     logger.warn("Webhook request contains no name for the new tag");
                 } else {
+                    logger.info("Detected newly created tag '{}'", tagName);
                     handleTagCreated(repo, tagName);
                 }
             } else {
@@ -143,14 +147,21 @@ public class WebhookController {
                 .basicAuthorization(jenkinsUsername, jenkinsPassword)
                 .build();
 
-        final ResponseEntity<String> response = restTemplate.getForEntity(url, String.class, tagName);
+        try {
+            final URI expandedUri = restTemplate.getUriTemplateHandler().expand(url, tagName);
+            logger.info("Triggering parameterized Jenkins job at '{}'", expandedUri.toString());
+            final ResponseEntity<String> response = restTemplate.getForEntity(expandedUri, String.class);
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("Successfully triggered parameterized job in Jenkins");
-        } else {
-            logger.error("Error triggering parameterized job in Jenkins - HTTP {} returned", response.getStatusCodeValue());
+            if (response.getStatusCode().is2xxSuccessful()) {
+                logger.info("Successfully triggered parameterized job in Jenkins - HTTP '{}' returned", response.getStatusCodeValue());
+            } else {
+                logger.error("Error triggering parameterized job in Jenkins - HTTP '{}' returned", response.getStatusCodeValue());
+            }
+
+            logger.debug(response.toString());
+        } catch (HttpStatusCodeException e) {
+            logger.error(String.format("Error triggering parameterized job in Jenkins - HTTP '%s' returned",
+                    e.getStatusCode().toString()), e);
         }
-
-        logger.debug(response.toString());
     }
 }
